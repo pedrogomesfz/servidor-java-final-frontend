@@ -33,18 +33,19 @@ function Login() {
       );
 
       if (resposta.ok) {
-  const token = await resposta.text();
+  const token = (await resposta.text()).trim();
+
+  console.log("JWT recebido:", token);
 
   localStorage.setItem("token", token);
   localStorage.setItem("username", username);
 
-        setMensagem("✓ Login efetuado com sucesso!");
+  setMensagem("✓ Login efetuado com sucesso!");
 
-        // Redirecionar para dashboard após 1.5 segundos
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 1500);
-      } else {
+  setTimeout(() => {
+    navigate("/dashboard");
+  }, 1500);
+} else {
         setErro("Username ou password incorretos.");
       }
     } catch (error) {
