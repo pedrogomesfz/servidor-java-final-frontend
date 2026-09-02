@@ -13,7 +13,7 @@ function Sidebar() {
         <a href="/dashboard">Dashboard</a>
         <a href="/servicos">Serviços</a>
         <a href="/criar-servico">Criar Serviço</a>
-        <a href="/perfil">Meu Perfil</a>
+        <a href="/meuperfil">Meu Perfil</a>
       </nav>
 
       <button onClick={handleLogout}>

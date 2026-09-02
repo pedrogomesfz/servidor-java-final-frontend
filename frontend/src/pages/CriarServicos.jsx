@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -9,6 +8,7 @@ function CriarServico() {
   const [mensagem, setMensagem] = useState("");
   const [erro, setErro] = useState("");
   const [enviando, setEnviando] = useState(false);
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -20,36 +20,51 @@ function CriarServico() {
 
     const token = localStorage.getItem("token");
 
+    console.log("Token:", token);
+
     if (!token) {
-      setErro("Utilizador não autenticado. Por favor, faça login novamente.");
+      setErro("Utilizador não autenticado. Faça login novamente.");
       setEnviando(false);
+      navigate("/login");
       return;
     }
 
     try {
       const resposta = await fetch(
-        `${import.meta.env.VITE_API_URL}/servicos`,
+        `${import.meta.env.VITE_API_URL}/v1/servicos`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            titulo: titulo,
-            descricao: descricao,
+            titulo,
+            descricao,
             preco: Number(preco),
+            precoComDesconto: 0
           }),
         }
       );
 
+      console.log("Status:", resposta.status);
+
       if (!resposta.ok) {
+        const textoErro = await resposta.text();
+        console.error("Erro do servidor:", textoErro);
+
         if (resposta.status === 401) {
           localStorage.removeItem("token");
+          localStorage.removeItem("username");
+
+          setErro("Sessão expirada. Faça login novamente.");
           navigate("/login");
           return;
         }
-        throw new Error("Erro ao criar serviço.");
+
+        throw new Error(
+          textoErro || "Erro ao criar serviço."
+        );
       }
 
       setMensagem("Serviço criado com sucesso!");
@@ -58,13 +73,15 @@ function CriarServico() {
       setDescricao("");
       setPreco("");
 
-      // Redirecionar para dashboard após 2 segundos
       setTimeout(() => {
         navigate("/dashboard");
       }, 2000);
+
     } catch (error) {
-      console.error(error);
-      setErro("Não foi possível criar o serviço. Tente novamente.");
+      console.error("Erro:", error);
+      setErro(
+        error.message || "Não foi possível criar o serviço."
+      );
     } finally {
       setEnviando(false);
     }
@@ -78,14 +95,46 @@ function CriarServico() {
     <div className="criar-servico">
       <div className="container">
         <div className="criar-servico-card">
+
           <h1>Criar Novo Serviço</h1>
 
-          {mensagem && <p className="sucesso" style={{ backgroundColor: "#e0ffe0", color: "#0a0", padding: "12px", borderRadius: "5px", marginBottom: "20px" }}>{mensagem}</p>}
-          {erro && <p className="erro" style={{ backgroundColor: "#ffe0e0", color: "#c00", padding: "12px", borderRadius: "5px", marginBottom: "20px" }}>{erro}</p>}
+          {mensagem && (
+            <p
+              className="sucesso"
+              style={{
+                backgroundColor: "#e0ffe0",
+                color: "#0a0",
+                padding: "12px",
+                borderRadius: "5px",
+                marginBottom: "20px",
+              }}
+            >
+              {mensagem}
+            </p>
+          )}
+
+          {erro && (
+            <p
+              className="erro"
+              style={{
+                backgroundColor: "#ffe0e0",
+                color: "#c00",
+                padding: "12px",
+                borderRadius: "5px",
+                marginBottom: "20px",
+              }}
+            >
+              {erro}
+            </p>
+          )}
 
           <form onSubmit={handleSubmit}>
+
             <div className="form-group">
-              <label htmlFor="titulo">Título *</label>
+              <label htmlFor="titulo">
+                Título *
+              </label>
+
               <input
                 id="titulo"
                 type="text"
@@ -98,7 +147,10 @@ function CriarServico() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="descricao">Descrição *</label>
+              <label htmlFor="descricao">
+                Descrição *
+              </label>
+
               <textarea
                 id="descricao"
                 placeholder="Descreva o serviço em detalhes..."
@@ -110,26 +162,46 @@ function CriarServico() {
               />
             </div>
 
-        <div>
-          <label>Preço</label>
-          <input
-            type="number"
-            placeholder="Ex: 5000"
-            value={preco}
-            onChange={(e) => setPreco(e.target.value)}
-            min="0"
-            required
-          />
-        </div>
+            <div className="form-group">
+              <label htmlFor="preco">
+                Preço *
+              </label>
+
+              <input
+                id="preco"
+                type="number"
+                placeholder="Ex: 5000"
+                value={preco}
+                onChange={(e) => setPreco(e.target.value)}
+                min="0"
+                required
+                disabled={enviando}
+              />
+            </div>
 
             <div className="form-actions">
-              <button type="submit" disabled={enviando} className="btn-primary">
-                {enviando ? "Criando..." : "Criar Serviço"}
+
+              <button
+                type="submit"
+                disabled={enviando}
+                className="btn-primary"
+              >
+                {enviando
+                  ? "Criando..."
+                  : "Criar Serviço"}
               </button>
-              <button type="button" onClick={handleCancel} disabled={enviando} className="btn-secondary">
+
+              <button
+                type="button"
+                onClick={handleCancel}
+                disabled={enviando}
+                className="btn-secondary"
+              >
                 Cancelar
               </button>
+
             </div>
+
           </form>
         </div>
       </div>
@@ -138,4 +210,3 @@ function CriarServico() {
 }
 
 export default CriarServico;
-

@@ -14,6 +14,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/registo" element={<Registo />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/criarservicos" element={<CriarServicos />} />
+        
         
         {/* Rotas protegidas */}
         <Route 
