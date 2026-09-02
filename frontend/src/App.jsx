@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Registo from "./pages/Registo";
 import CriarServicos from "./pages/CriarServicos";
 import ProtectedRoute from "./componentes/ProtectedRoute";
+import MeuPerfil from "./pages/MeuPerfil";
 
 function App() {
   return (
@@ -14,7 +15,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/registo" element={<Registo />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/criarservicos" element={<CriarServicos />} />
+        <Route path="/perfil" element={<MeuPerfil />} />
         
         
         {/* Rotas protegidas */}

@@ -39,11 +39,13 @@ function CriarServico() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            titulo,
-            descricao,
-            preco: Number(preco),
-            precoComDesconto: 0
-          }),
+          titulo,
+          descricao,
+          preco: Number(preco),
+          precoComDesconto: 0,
+          aplicarDescontoEmAtivos: 0
+
+        }),
         }
       );
 
